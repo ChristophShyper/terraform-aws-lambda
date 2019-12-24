@@ -1,0 +1,21 @@
+name: On pull request
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+
+      - name: Terraform Validate
+        uses: volcano-coffee-company/terraform-validate@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}

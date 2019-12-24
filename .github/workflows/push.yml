@@ -1,0 +1,29 @@
+name: On commit push
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v1
+
+      - name: Terraform Validate
+        uses: volcano-coffee-company/terraform-validate@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create pull request (conditional)
+        if: github.actor == 'ChristophShyper' && github.ref != 'refs/heads/master'
+        uses: repo-sync/pull-request@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_label: "auto-pull-request"
+          pr_body: "*Automated pull request*"
+          pr_title: "${{ github.event.commits[0].message }}"
+          pr_reviewer: "ChristophShyper"
+          pr_assignee: "ChristophShyper"
